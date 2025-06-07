@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   Request,
   Res,
   UseGuards,
@@ -56,5 +57,11 @@ export class AuthController {
     res.redirect(
       `http://localhost:3000/api/auth/google/callback?userId=${response.id}&name=${response.name}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}`,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('signout')
+  signOut(@Request() req) {
+    return this.authService.signOut(req.user.id);
   }
 }
