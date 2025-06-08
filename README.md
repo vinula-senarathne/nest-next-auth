@@ -19,7 +19,7 @@ REFRESH_JWT_EXPIRES_IN=7d
 # Google OAuth configuration
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=http://localhost:3000/auth/google/callback
+GOOGLE_CALLBACK_URL=http://localhost:8000/auth/google/callback
 
 ```
 
@@ -29,7 +29,7 @@ This file contains environment variables for the Next.js frontend. Create a `.en
 
 ```env
 # Backend API URL
-BACKEND_URL=http://localhost:4000
+BACKEND_URL=http://localhost:8000
 
 # Session secret for authentication/session handling
 SESSION_SECRET_KEY=your_session_secret
