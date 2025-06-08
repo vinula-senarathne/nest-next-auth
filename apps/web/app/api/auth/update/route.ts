@@ -2,12 +2,19 @@ import { updateTokens } from "@/lib/session";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { accessToken, refreshToken } = body;
+  try {
+    const body = await req.json();
+    const { accessToken, refreshToken } = body;
 
-  if (!accessToken || !refreshToken)
-    return new Response("Provide tokens", { status: 401 });
+    console.log("accessToken: ", accessToken);
+    console.log("refreshToken: ", refreshToken);
 
-  await updateTokens({ accessToken, refreshToken });
-  return new Response("OK", { status: 200 });
+    if (!accessToken || !refreshToken)
+      return new Response("Provide tokens", { status: 401 });
+
+    await updateTokens({ accessToken, refreshToken });
+    return new Response("OK", { status: 200 });
+  } catch (error) {
+    console.error("Failed to update tokens: ", error);
+  }
 }

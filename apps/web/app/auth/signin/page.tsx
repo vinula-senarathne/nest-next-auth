@@ -18,7 +18,7 @@ const SignInPage = () => {
         </Link>
       </div>
       <hr className="w-full my-3" />
-      <Button className="w-full">
+      <Button asChild className="w-full">
         <a href={`${BACKEND_URL}/auth/google/login`}>Sign In With Google</a>
       </Button>
     </div>

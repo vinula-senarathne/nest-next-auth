@@ -69,6 +69,7 @@ export async function signIn(
       user: {
         id: result.id,
         name: result.name,
+        role: result.role,
       },
       accessToken: result.accessToken,
       refreshToken: result.refreshToken,
@@ -98,19 +99,32 @@ export const refreshToken = async (oldRefreshToken: string) => {
       }),
     });
 
+    console.log("Response: ", response.body);
+    console.log("Response status: ", response.status);
+
     if (!response.ok) {
       throw new Error("Failed to refresh token.");
     }
 
     const { accessToken, refreshToken } = await response.json();
+
+    console.log("Access TK", accessToken);
+    console.log("Refresh TK", refreshToken);
+
     // Updating the session with new tokens
+    // TODO: Check whether the update API is calling or not.
     const updateRes = await fetch("http://localhost:3000/api/auth/update", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         accessToken,
         refreshToken,
       }),
     });
+
+    console.log("Update result status: ", updateRes.status);
 
     if (!updateRes.ok) throw new Error("Failed to update tokens");
 

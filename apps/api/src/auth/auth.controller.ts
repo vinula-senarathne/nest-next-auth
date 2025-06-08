@@ -17,6 +17,8 @@ import { RefreshAuthGuard } from './guards/refresh-auth/refresh-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth/google-auth.guard';
 import { Response } from 'express';
 import { Public } from './types/decorators/public.decorator';
+import { Roles } from './types/decorators/roles.decorator';
+import { RolesGuard } from './guards/roles/roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -32,9 +34,11 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('signin')
   login(@Request() req) {
-    return this.authService.login(req.user.id, req.user.name);
+    return this.authService.login(req.user.id, req.user.name, req.user.role);
   }
 
+  @Roles('ADMIN', 'EDITOR', 'USER')
+  @UseGuards(RolesGuard)
   @Get('protected')
   getAll(@Request() req) {
     return {
@@ -58,10 +62,14 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get('google/callback')
   async googleCallback(@Request() req, @Res() res: Response) {
-    const response = await this.authService.login(req.user.id, req.user.name);
+    const response = await this.authService.login(
+      req.user.id,
+      req.user.name,
+      req.user.role,
+    );
 
     res.redirect(
-      `http://localhost:3000/api/auth/google/callback?userId=${response.id}&name=${response.name}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}`,
+      `http://localhost:3000/api/auth/google/callback?userId=${response.id}&name=${response.name}&accessToken=${response.accessToken}&refreshToken=${response.refreshToken}&role=${response.role}`,
     );
   }
 

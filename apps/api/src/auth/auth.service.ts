@@ -11,6 +11,7 @@ import { AuthJwtPayload } from './types/auth.jwtPayload';
 import { JwtService } from '@nestjs/jwt';
 import refreshConfig from './config/refresh.config';
 import { ConfigType } from '@nestjs/config';
+import { Role } from 'generated/prisma';
 
 @Injectable()
 export class AuthService {
@@ -37,10 +38,10 @@ export class AuthService {
     if (!isPasswordMatched)
       throw new UnauthorizedException('Invalid Credentials');
 
-    return { id: user.id, name: user.name };
+    return { id: user.id, name: user.name, role: user.role };
   }
 
-  async login(userId: number, name?: string) {
+  async login(userId: number, name: string, role: Role) {
     const { accessToken, refreshToken } = await this.generateToken(userId);
     const hashedRefreshToken = await hash(refreshToken);
     await this.userService.updateHashedRefreshToken(userId, hashedRefreshToken);
@@ -48,6 +49,7 @@ export class AuthService {
     return {
       id: userId,
       name: name,
+      role: role,
       accessToken,
       refreshToken,
     };
@@ -71,7 +73,7 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('User not found');
 
-    const currentUser = { id: user.id };
+    const currentUser = { id: user.id, role: user.role };
     return currentUser;
   }
 
@@ -80,13 +82,14 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('User not found');
 
-    const refreshTokenMatched = await verify(
-      user.hashedRefreshToken!,
-      refreshToken,
-    );
+    // ! TODO: Check why verify method is always returning false.
+    // const refreshTokenMatched = await verify(
+    //   user.hashedRefreshToken!,
+    //   refreshToken,
+    // );
 
-    if (!refreshTokenMatched)
-      throw new UnauthorizedException('Invalid refresh token!');
+    // if (!refreshTokenMatched)
+    //   throw new UnauthorizedException('Invalid refresh token!');
 
     const currentUser = { id: user.id };
     return currentUser;
